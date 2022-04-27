@@ -7,7 +7,8 @@ import (
 
 //Event is a model for a database table
 type Event struct {
-	ID int
+	ID   int
+	Name string
 }
 
 //DBMigrate creates a table acording to the model
