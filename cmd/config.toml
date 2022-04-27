@@ -1,0 +1,9 @@
+#config.toml
+
+Dialect = "mysql"
+Host = "127.0.0.1"
+Port = 3306
+Username = "username"
+Password = "password"
+Name = "database name"
+Charset = "utf8"
