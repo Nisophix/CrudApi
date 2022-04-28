@@ -14,7 +14,7 @@ type Sub struct {
 //Event is a model for a database table
 type Event struct {
 	ID   int    `gorm:"primaryKey";auto_increment;not_null"`
-	UUID string `gorm:"type:VARCHAR(20);unique;not_null"`
+	UUID string `gorm:"type:VARCHAR(36);unique;not_null"`
 	Name string `gorm:"type:VARCHAR(20);not_null"`
 	Sub
 	TimeSubbed time.Time `gorm:"index"`
