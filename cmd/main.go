@@ -30,4 +30,4 @@ func main() {
 // curl -X PUT -H "Content-Type: application/json" -d '{"Name": "Joe"}' http://127.0.0.1:8080/event/1
 
 // Delete
-// curl -X DELETE http://127.0.0.1:8080/delete/1
+// curl -X DELETE http://127.0.0.1:8080/event/1

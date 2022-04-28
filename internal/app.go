@@ -67,7 +67,7 @@ func (a *App) setRouters() {
 	//update an event by id
 	a.Put("/event/{id}", a.handleRequest(handlers.Update))
 	//delet an event by id
-	a.Delete("/event/{id}", a.handleRequest(handlers.Delete))
+	a.Delete("/event/{uuid}", a.handleRequest(handlers.Delete))
 	//check status by id
 	a.Get("/status/{uuid}", a.handleRequest(handlers.CheckSub))
 }

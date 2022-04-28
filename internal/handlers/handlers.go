@@ -38,7 +38,7 @@ func Read(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, _ := strconv.Atoi(vars["id"])
-	event := check404(db, id, w, r)
+	event := checkID_or404(db, id, w, r)
 	if event == nil {
 		return
 	}
@@ -50,9 +50,9 @@ func CheckSub(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	uuid := vars["uuid"]
-	event := models.Event{}
-	if err := db.First(&event, models.Event{UUID: uuid}).Error; err != nil {
-		respondError(w, http.StatusNotFound, err.Error())
+	event := checkUUID_or404(db, uuid, w, r)
+	if event == nil {
+		return
 	}
 	respondJSON(w, http.StatusOK, event.Sub)
 }
@@ -61,7 +61,7 @@ func Update(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, _ := strconv.Atoi(vars["id"])
-	event := check404(db, id, w, r)
+	event := checkID_or404(db, id, w, r)
 	if event == nil {
 		return
 	}
@@ -83,8 +83,8 @@ func Update(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func Delete(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	id, _ := strconv.Atoi(vars["id"])
-	event := check404(db, id, w, r)
+	uuid := vars["uuid"]
+	event := checkUUID_or404(db, uuid, w, r)
 	if event == nil {
 		return
 	}
@@ -95,9 +95,18 @@ func Delete(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusNoContent, nil)
 }
 
-func check404(db *gorm.DB, id int, w http.ResponseWriter, r *http.Request) *models.Event {
+func checkID_or404(db *gorm.DB, id int, w http.ResponseWriter, r *http.Request) *models.Event {
 	event := models.Event{}
 	if err := db.First(&event, models.Event{ID: id}).Error; err != nil {
+		respondError(w, http.StatusNotFound, err.Error())
+		return nil
+	}
+	return &event
+}
+
+func checkUUID_or404(db *gorm.DB, uuid string, w http.ResponseWriter, r *http.Request) *models.Event {
+	event := models.Event{}
+	if err := db.First(&event, models.Event{UUID: uuid}).Error; err != nil {
 		respondError(w, http.StatusNotFound, err.Error())
 		return nil
 	}
