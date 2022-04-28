@@ -3,7 +3,7 @@
 Dialect = "mysql"
 Host = "127.0.0.1"
 Port = 3306
-Username = "username"
-Password = "password"
-Name = "database name"
+Username = "john1"
+Password = "123123"
+Name = "testbackend"
 Charset = "utf8"

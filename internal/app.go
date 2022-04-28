@@ -9,8 +9,8 @@ import (
 	"github.com/jinzhu/gorm"
 
 	"github.com/Nisophix/crud_api/internal/config"
+	"github.com/Nisophix/crud_api/internal/database/models"
 	"github.com/Nisophix/crud_api/internal/handlers"
-	"github.com/Nisophix/crud_api/internal/models"
 )
 
 type App struct {
@@ -58,11 +58,18 @@ func (a *App) Start(host string) {
 }
 
 func (a *App) setRouters() {
+	//get everything
 	a.Get("/events", a.handleRequest(handlers.GetAll))
+	//post a new event
 	a.Post("/event", a.handleRequest(handlers.Create))
+	//get an event by id
 	a.Get("/event/{id}", a.handleRequest(handlers.Read))
+	//update an event by id
 	a.Put("/event/{id}", a.handleRequest(handlers.Update))
+	//delet an event by id
 	a.Delete("/event/{id}", a.handleRequest(handlers.Delete))
+	//check status by id
+	a.Get("/status/{uuid}", a.handleRequest(handlers.CheckSub))
 }
 
 type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)

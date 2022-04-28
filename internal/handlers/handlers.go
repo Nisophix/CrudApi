@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Nisophix/crud_api/internal/models"
+	"github.com/Nisophix/crud_api/internal/database/models"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
@@ -43,6 +43,18 @@ func Read(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondJSON(w, http.StatusOK, event)
+}
+
+//возвращает просто true или false
+func CheckSub(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	uuid := vars["uuid"]
+	event := models.Event{}
+	if err := db.First(&event, models.Event{UUID: uuid}).Error; err != nil {
+		respondError(w, http.StatusNotFound, err.Error())
+	}
+	respondJSON(w, http.StatusOK, event.Sub)
 }
 
 func Update(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
