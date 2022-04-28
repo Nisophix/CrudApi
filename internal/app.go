@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -9,8 +8,9 @@ import (
 	"github.com/jinzhu/gorm"
 
 	"github.com/Nisophix/crud_api/internal/config"
-	"github.com/Nisophix/crud_api/internal/database/models"
+	"github.com/Nisophix/crud_api/internal/database"
 	"github.com/Nisophix/crud_api/internal/handlers"
+	"github.com/Nisophix/crud_api/internal/models"
 )
 
 type App struct {
@@ -19,19 +19,7 @@ type App struct {
 }
 
 func (a *App) Initialize(config *config.Config) {
-	dbURI := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True",
-		config.DB.Username,
-		config.DB.Password,
-		config.DB.Host,
-		config.DB.Port,
-		config.DB.Name,
-		config.DB.Charset)
-
-	db, err := gorm.Open(config.DB.Dialect, dbURI)
-	if err != nil {
-		log.Fatal("Could not connect database")
-	}
-
+	db, _ := database.Connection(config)
 	a.DB = models.DBMigrate(db)
 	a.Router = mux.NewRouter()
 	a.setRouters()
@@ -59,17 +47,28 @@ func (a *App) Start(host string) {
 
 func (a *App) setRouters() {
 	//get everything
-	a.Get("/events", a.handleRequest(handlers.GetAll))
+	// a.Get("/events", a.handleRequest(handlers.GetAll))
+	a.Get("/{key}/users", a.handleRequest(handlers.GetAllPrivate))
+
 	//post a new event
-	a.Post("/event", a.handleRequest(handlers.Create))
+	// a.Post("/event", a.handleRequest(handlers.Create))
+	a.Post("/{key}/createuser", a.handleRequest(handlers.CreatePrivate))
+
 	//get an event by id
-	a.Get("/event/{id}", a.handleRequest(handlers.Read))
+	// a.Get("/event/{id}", a.handleRequest(handlers.Read))
+	a.Get("/{key}/getuser/{id}", a.handleRequest(handlers.ReadPrivate))
+
 	//update an event by id
-	a.Put("/event/{id}", a.handleRequest(handlers.Update))
-	//delet an event by id
-	a.Delete("/event/{uuid}", a.handleRequest(handlers.Delete))
-	//check status by id
-	a.Get("/status/{uuid}", a.handleRequest(handlers.CheckSub))
+	// a.Put("/event/{id}", a.handleRequest(handlers.Update))
+	a.Put("/{key}/updateuser/{id}", a.handleRequest(handlers.UpdatePrivate))
+
+	//delet an event by uuid
+	// a.Delete("/event/{uuid}", a.handleRequest(handlers.Delete))
+	a.Delete("/{key}/deleteuser/{uuid}", a.handleRequest(handlers.DeletePrivate))
+
+	//check status by uuid
+	a.Get("/userstatus/{uuid}", a.handleRequest(handlers.CheckSub))
+	// a.Get("/{key}/userstatus/{uuid}", a.handleRequest(handlers.CheckSubPrivate))
 }
 
 type RequestHandlerFunction func(db *gorm.DB, w http.ResponseWriter, r *http.Request)
